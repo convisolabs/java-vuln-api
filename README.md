@@ -16,7 +16,7 @@ Este projeto foi criado com vulnerabilidades para uso em laboratório como back-
 1. Clone o repositório:
 
 ```bash
-git clone https://github.com/luzivangois/java-vuln-api.git
+git clone https://github.com/convisolabs/java-vuln-api.git
 ```
 
 2. Start a API executando o arquivo JavaVulnAppForumApplication.java
