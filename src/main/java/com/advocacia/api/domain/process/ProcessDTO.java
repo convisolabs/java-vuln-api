@@ -1,4 +1,4 @@
-package com.advocacia.api.domain.processo;
+package com.advocacia.api.domain.process;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProcessoJudicialDTO {
+public class ProcessDTO {
     
     @NotBlank(message = "Número do processo é obrigatório")
     private String numeroProcesso;
@@ -27,7 +27,7 @@ public class ProcessoJudicialDTO {
     
     private String advogadoResponsavel;
     
-    private StatusProcesso status;
+    private StatusProcess status;
     
     private String observacoes;
     

@@ -1,4 +1,4 @@
-package com.advocacia.api.domain.processo;
+package com.advocacia.api.domain.process;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Table(name = "processo_judicial")
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProcessoJudicial {
+public class Process {
     
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -39,7 +39,7 @@ public class ProcessoJudicial {
     
     @Column(name = "status_processo")
     @Enumerated(EnumType.STRING)
-    private StatusProcesso status;
+    private StatusProcess status;
     
     @Column(name = "data_inicio")
     private LocalDateTime dataInicio;
@@ -61,7 +61,7 @@ public class ProcessoJudicial {
         dataInicio = LocalDateTime.now();
         dataAtualizacao = LocalDateTime.now();
         if (status == null) {
-            status = StatusProcesso.EM_ANDAMENTO;
+            status = StatusProcess.EM_ANDAMENTO;
         }
     }
     

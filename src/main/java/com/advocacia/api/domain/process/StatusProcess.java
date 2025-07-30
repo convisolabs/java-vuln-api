@@ -1,6 +1,6 @@
-package com.advocacia.api.domain.processo;
+package com.advocacia.api.domain.process;
 
-public enum StatusProcesso {
+public enum StatusProcess {
     EM_ANDAMENTO("Em Andamento"),
     SUSPENSO("Suspenso"),
     ARQUIVADO("Arquivado"),
@@ -12,7 +12,7 @@ public enum StatusProcesso {
     
     private final String descricao;
     
-    StatusProcesso(String descricao) {
+    StatusProcess(String descricao) {
         this.descricao = descricao;
     }
     

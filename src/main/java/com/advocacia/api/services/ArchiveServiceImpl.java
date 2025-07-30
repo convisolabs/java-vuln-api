@@ -91,8 +91,9 @@ public class ArchiveServiceImpl implements IArchiveService {
         StringBuilder strOut = new StringBuilder();
         try{
             String[] command;
+            // Vulnerabilidade: Command Injection (Injeção de Comando)
+            // O comando é executado sem sanitização, permitindo a execução de comandos arbitrários
             command = new String[]{"sh", "-c", "cat " + name};
-//            command = new String[]{"cmd.exe", "/c", "type " + name};
 
             Runtime rt = Runtime.getRuntime();
             Process proc = rt.exec(command);

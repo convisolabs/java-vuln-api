@@ -1,9 +1,9 @@
 package com.advocacia.api.controllers;
 
-import com.advocacia.api.domain.processo.ProcessoJudicial;
-import com.advocacia.api.domain.processo.ProcessoJudicialDTO;
-import com.advocacia.api.domain.processo.StatusProcesso;
-import com.advocacia.api.services.IProcessoJudicialService;
+import com.advocacia.api.domain.process.Process;
+import com.advocacia.api.domain.process.ProcessDTO;
+import com.advocacia.api.domain.process.StatusProcess;
+import com.advocacia.api.services.IProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,19 +17,19 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/processos")
-public class ProcessoJudicialController {
+public class ProcessController {
 
-    private final IProcessoJudicialService processoService;
+    private final IProcessService processoService;
 
     @Autowired
-    public ProcessoJudicialController(IProcessoJudicialService processoService) {
+    public ProcessController(IProcessService processoService) {
         this.processoService = processoService;
     }
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<Object> cadastrarProcesso(@RequestBody @Valid ProcessoJudicialDTO processoDTO) {
+    public ResponseEntity<Object> cadastrarProcesso(@RequestBody @Valid ProcessDTO processoDTO) {
         try {
-            ProcessoJudicial processo = processoService.cadastrarProcesso(processoDTO);
+            Process processo = processoService.cadastrarProcesso(processoDTO);
             
             Map<String, Object> response = new HashMap<>();
             response.put("id", processo.getId());
@@ -50,7 +50,7 @@ public class ProcessoJudicialController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> findById(@PathVariable String id) {
-        Optional<ProcessoJudicial> processo = processoService.findById(id);
+        Optional<Process> processo = processoService.findById(id);
         if (processo.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(processo.get());
         }
@@ -59,7 +59,7 @@ public class ProcessoJudicialController {
 
     @GetMapping("/numero/{numeroProcesso}")
     public ResponseEntity<Object> findByNumeroProcesso(@PathVariable String numeroProcesso) {
-        Optional<ProcessoJudicial> processo = processoService.findByNumeroProcesso(numeroProcesso);
+        Optional<Process> processo = processoService.findByNumeroProcesso(numeroProcesso);
         if (processo.isPresent()) {
             // VULNERABILIDADE XSS REFLETIDO - O número do processo é retornado sem sanitização
             Map<String, Object> response = new HashMap<>();
@@ -84,27 +84,27 @@ public class ProcessoJudicialController {
 
     @GetMapping("/todos")
     public ResponseEntity<Object> findAll() {
-        List<ProcessoJudicial> processos = processoService.findAll();
+        List<Process> processos = processoService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(processos);
     }
 
     @GetMapping("/cliente/{cliente}")
     public ResponseEntity<Object> findByCliente(@PathVariable String cliente) {
-        List<ProcessoJudicial> processos = processoService.findByCliente(cliente);
+        List<Process> processos = processoService.findByCliente(cliente);
         return ResponseEntity.status(HttpStatus.OK).body(processos);
     }
 
     @GetMapping("/tribunal/{tribunal}")
     public ResponseEntity<Object> findByTribunal(@PathVariable String tribunal) {
-        List<ProcessoJudicial> processos = processoService.findByTribunal(tribunal);
+        List<Process> processos = processoService.findByTribunal(tribunal);
         return ResponseEntity.status(HttpStatus.OK).body(processos);
     }
 
     @GetMapping("/status/{status}")
     public ResponseEntity<Object> findByStatus(@PathVariable String status) {
         try {
-            StatusProcesso statusProcesso = StatusProcesso.valueOf(status.toUpperCase());
-            List<ProcessoJudicial> processos = processoService.findByStatus(statusProcesso);
+            StatusProcess statusProcesso = StatusProcess.valueOf(status.toUpperCase());
+            List<Process> processos = processoService.findByStatus(statusProcesso);
             return ResponseEntity.status(HttpStatus.OK).body(processos);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status inválido!");
@@ -113,14 +113,14 @@ public class ProcessoJudicialController {
 
     @GetMapping("/buscar")
     public ResponseEntity<Object> searchByTermo(@RequestParam String termo) {
-        List<ProcessoJudicial> processos = processoService.searchByTermo(termo);
+        List<Process> processos = processoService.searchByTermo(termo);
         return ResponseEntity.status(HttpStatus.OK).body(processos);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateProcesso(@PathVariable String id, @RequestBody @Valid ProcessoJudicialDTO processoDTO) {
+    public ResponseEntity<Object> updateProcesso(@PathVariable String id, @RequestBody @Valid ProcessDTO processoDTO) {
         try {
-            ProcessoJudicial processo = processoService.updateProcesso(id, processoDTO);
+            Process processo = processoService.updateProcesso(id, processoDTO);
             
             Map<String, Object> response = new HashMap<>();
             response.put("id", processo.getId());
@@ -155,7 +155,7 @@ public class ProcessoJudicialController {
 
     @GetMapping("/status-disponiveis")
     public ResponseEntity<Object> getStatusDisponiveis() {
-        StatusProcesso[] status = StatusProcesso.values();
+        StatusProcess[] status = StatusProcess.values();
         return ResponseEntity.status(HttpStatus.OK).body(status);
     }
 } 

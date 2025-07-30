@@ -1,9 +1,9 @@
 package com.advocacia.api.services;
 
-import com.advocacia.api.domain.processo.ProcessoJudicial;
-import com.advocacia.api.domain.processo.ProcessoJudicialDTO;
-import com.advocacia.api.domain.processo.StatusProcesso;
-import com.advocacia.api.repositories.ProcessoJudicialRepository;
+import com.advocacia.api.domain.process.Process;
+import com.advocacia.api.domain.process.ProcessDTO;
+import com.advocacia.api.domain.process.StatusProcess;
+import com.advocacia.api.repositories.ProcessRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,30 +11,30 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ProcessoJudicialServiceImpl implements IProcessoJudicialService {
+public class ProcessServiceImpl implements IProcessService {
     
-    private final ProcessoJudicialRepository processoRepository;
+    private final ProcessRepository processoRepository;
     
     @Autowired
-    public ProcessoJudicialServiceImpl(ProcessoJudicialRepository processoRepository) {
+    public ProcessServiceImpl(ProcessRepository processoRepository) {
         this.processoRepository = processoRepository;
     }
     
     @Override
-    public ProcessoJudicial cadastrarProcesso(ProcessoJudicialDTO processoDTO) {
+    public Process cadastrarProcesso(ProcessDTO processoDTO) {
         // Verificar se já existe um processo com o mesmo número
         if (processoRepository.existsByNumeroProcesso(processoDTO.getNumeroProcesso())) {
             throw new RuntimeException("Já existe um processo com o número: " + processoDTO.getNumeroProcesso());
         }
         
-        ProcessoJudicial processo = new ProcessoJudicial();
+        Process processo = new Process();
         processo.setNumeroProcesso(processoDTO.getNumeroProcesso());
         processo.setTribunal(processoDTO.getTribunal());
         processo.setVara(processoDTO.getVara());
         processo.setCliente(processoDTO.getCliente());
         processo.setParteContraria(processoDTO.getParteContraria());
         processo.setAdvogadoResponsavel(processoDTO.getAdvogadoResponsavel());
-        processo.setStatus(processoDTO.getStatus() != null ? processoDTO.getStatus() : StatusProcesso.EM_ANDAMENTO);
+        processo.setStatus(processoDTO.getStatus() != null ? processoDTO.getStatus() : StatusProcess.EM_ANDAMENTO);
         processo.setObservacoes(processoDTO.getObservacoes());
         processo.setValorCausa(processoDTO.getValorCausa());
         processo.setTipoAcao(processoDTO.getTipoAcao());
@@ -43,50 +43,49 @@ public class ProcessoJudicialServiceImpl implements IProcessoJudicialService {
     }
     
     @Override
-    public Optional<ProcessoJudicial> findById(String id) {
+    public Optional<Process> findById(String id) {
         return processoRepository.findById(id);
     }
     
     @Override
-    public Optional<ProcessoJudicial> findByNumeroProcesso(String numeroProcesso) {
+    public Optional<Process> findByNumeroProcesso(String numeroProcesso) {
         return processoRepository.findByNumeroProcesso(numeroProcesso);
     }
     
     @Override
-    public List<ProcessoJudicial> findAll() {
+    public List<Process> findAll() {
         return processoRepository.findAll();
     }
     
     @Override
-    public List<ProcessoJudicial> findByCliente(String cliente) {
+    public List<Process> findByCliente(String cliente) {
         return processoRepository.findByClienteContainingIgnoreCase(cliente);
     }
     
     @Override
-    public List<ProcessoJudicial> findByTribunal(String tribunal) {
+    public List<Process> findByTribunal(String tribunal) {
         return processoRepository.findByTribunal(tribunal);
     }
     
     @Override
-    public List<ProcessoJudicial> findByStatus(StatusProcesso status) {
+    public List<Process> findByStatus(StatusProcess status) {
         return processoRepository.findByStatus(status);
     }
     
     @Override
-    public List<ProcessoJudicial> searchByTermo(String termo) {
+    public List<Process> searchByTermo(String termo) {
         return processoRepository.findByNumeroProcessoOrClienteOrParteContrariaContaining(termo);
     }
     
     @Override
-    public ProcessoJudicial updateProcesso(String id, ProcessoJudicialDTO processoDTO) {
-        Optional<ProcessoJudicial> processoExistente = processoRepository.findById(id);
+    public Process updateProcesso(String id, ProcessDTO processoDTO) {
+        Optional<Process> processoExistente = processoRepository.findById(id);
         if (processoExistente.isEmpty()) {
             throw new RuntimeException("Processo não encontrado com o ID: " + id);
         }
         
-        ProcessoJudicial processo = processoExistente.get();
+        Process processo = processoExistente.get();
         
-        // Verificar se o novo número de processo já existe em outro registro
         if (!processo.getNumeroProcesso().equals(processoDTO.getNumeroProcesso()) && 
             processoRepository.existsByNumeroProcesso(processoDTO.getNumeroProcesso())) {
             throw new RuntimeException("Já existe um processo com o número: " + processoDTO.getNumeroProcesso());
