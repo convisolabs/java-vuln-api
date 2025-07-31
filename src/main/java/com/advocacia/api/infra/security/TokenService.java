@@ -1,6 +1,7 @@
 package com.advocacia.api.infra.security;
 
 import com.advocacia.api.domain.user.User;
+import com.advocacia.api.domain.user.UserMongo;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import io.jsonwebtoken.Jwts;
@@ -21,6 +22,22 @@ public class TokenService {
     private String secret = "0123456789012345678901234567890101234567890123456789012345678901";
 
     public String generateToken(User user){
+        try{
+
+            return Jwts.builder()
+                    .setIssuer("advocacia-api")
+                    .setSubject(user.getLogin())
+                    .claim("role", String.valueOf(user.getRole()))
+                    .setExpiration(Date.from(genExpirationDate()))
+                    .signWith(SignatureAlgorithm.HS256, secret)
+                    .compact();
+
+        } catch (JWTCreationException exception) {
+            throw new RuntimeException("Error while generating token", exception);
+        }
+    }
+    
+    public String generateToken(UserMongo user){
         try{
 
             return Jwts.builder()
