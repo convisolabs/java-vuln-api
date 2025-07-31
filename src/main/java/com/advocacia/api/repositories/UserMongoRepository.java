@@ -19,15 +19,11 @@ public interface UserMongoRepository extends MongoRepository<UserMongo, String> 
     @Query(value = "?0")
     Optional<UserMongo> findOneByCustomQuery(String query);
     
-    // Método normal para buscar por login
     UserMongo findByLogin(String login);
     
-    // Método normal para verificar se login existe
     boolean existsByLogin(String login);
     
-    // Método normal para buscar por ID
     Optional<UserMongo> findById(String id);
     
-    // Método normal para listar todos
     List<UserMongo> findAll();
 } 

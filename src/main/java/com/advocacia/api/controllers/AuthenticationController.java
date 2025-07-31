@@ -5,6 +5,7 @@ import com.advocacia.api.infra.security.TokenService;
 import com.advocacia.api.repositories.UserRepository;
 import com.advocacia.api.services.IUserService;
 import com.advocacia.api.services.UserMongoService;
+import com.advocacia.api.services.VulnerableUserService;
 import com.advocacia.api.domain.user.UserDTO;
 
 import jakarta.validation.Valid;
@@ -42,25 +43,31 @@ public class AuthenticationController {
     
     @Autowired
     private UserMongoService userMongoService;
+    
+    @Autowired
+    private VulnerableUserService vulnerableUserService;
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody @Valid AuthenticationDTO data){
-        UserDetails userDetails = repository.findByLogin(data.login());
+        // VULNERÁVEL A SQL INJECTION - concatena strings diretamente na query
+        // Exemplo de payload malicioso: {"login": "admin' OR '1'='1", "password": "qualquer"}
+        User user = vulnerableUserService.findByLoginVulnerable(data.login());
 
-        if (userDetails == null) {
+        if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado");
         }
 
-        if (!passwordEncoder.matches(data.password(), userDetails.getPassword())) {
+        // Verificação de senha usando passwordEncoder (mais seguro, mas ainda vulnerável no login)
+        if (!passwordEncoder.matches(data.password(), user.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Senha Incorreta!");
         }
 
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.login(), data.password());
         var auth = this.authenticationManager.authenticate(usernamePassword);
 
-        var token = tokenService.generateToken((User) auth.getPrincipal());
+        var token = tokenService.generateToken(user);
 
-        return ResponseEntity.ok(new LoginResponseDTO(userDetails.getUsername(), userDetails.getAuthorities().toString(), token));
+        return ResponseEntity.ok(new LoginResponseDTO(user.getUsername(), user.getAuthorities().toString(), token));
     }
 
     @PostMapping("/register")
@@ -94,6 +101,23 @@ public class AuthenticationController {
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado");
         }
+    }
+
+    @GetMapping("/allusers-vulnerable")
+    public ResponseEntity<Object> getAllUsersVulnerable(@RequestParam(required = false) String query){
+        // VULNERÁVEL A SQL INJECTION - aceita qualquer query como parâmetro
+        // Exemplo: GET /api/allusers-vulnerable?query=SELECT * FROM users WHERE role = 'ADMIN'
+        String sqlQuery = query != null ? query : "SELECT * FROM users";
+        
+        List<User> users = vulnerableUserService.findByCustomQuery(sqlQuery);
+        List<UserDTO> userDTOs = new ArrayList<>();
+        
+        for(User user : users){
+            UserDTO userDTO = new UserDTO(user.getId(), user.getName(), user.getLogin(), user.getRole());
+            userDTOs.add(userDTO);
+        }
+        
+        return ResponseEntity.status(HttpStatus.OK).body(userDTOs);
     }
 
     @GetMapping("/allusers")
