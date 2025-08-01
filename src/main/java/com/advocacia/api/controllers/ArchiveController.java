@@ -29,6 +29,12 @@ public class ArchiveController {
 
     @PostMapping("/sendfile")
     public ResponseEntity<Object> uploadFile(@RequestParam(name = "file") MultipartFile archive, @RequestParam(name = "name") String name){
+        // VULNERABILIDADE: Upload de Arquivos Arbitrários
+        // O parâmetro 'name' é usado diretamente sem validação, permitindo:
+        // - Upload de arquivos com extensões perigosas (.jsp, .php, .exe, etc.)
+        // - Sobrescrever arquivos do sistema
+        // - Upload de arquivos maliciosos
+        
         if (archiveService.archiveExists(name)) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Arquivo já existe no servidor!");
         }

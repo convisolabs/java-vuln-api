@@ -42,9 +42,18 @@ public class ArchiveServiceImpl implements IArchiveService {
         try{
             String destFolder = destSendDocument;
             String name = fileName;
+            
+            // VULNERABILIDADE 1: Path Traversal
+            // A linha abaixo permite path traversal através do parâmetro 'name'
+            // Exemplo: se name = "../../../etc/passwd", o arquivo será salvo fora do diretório permitido
+            // VULNERABILIDADE 2: Upload de Arquivos Arbitrários
+            // Não há validação de extensão, permitindo upload de qualquer tipo de arquivo
             Path path = Paths.get(destFolder + File.separator + name);
+            
             Archive fileExists = findByPath(path.toString());
             if(fileExists == null){
+                // VULNERABILIDADE 3: Sobrescrita de Arquivos
+                // StandardCopyOption.REPLACE_EXISTING permite sobrescrever arquivos existentes
                 Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
                 Archive arch = new Archive();
                 arch.setLinkArchive(path.toString());
@@ -91,8 +100,10 @@ public class ArchiveServiceImpl implements IArchiveService {
         StringBuilder strOut = new StringBuilder();
         try{
             String[] command;
-            // Vulnerabilidade: Command Injection (Injeção de Comando)
-            // O comando é executado sem sanitização, permitindo a execução de comandos arbitrários
+            // VULNERABILIDADE 4: Command Injection (Injeção de Comando)
+            // A linha abaixo é extremamente perigosa - permite execução de comandos arbitrários
+            // Exemplo: se name = "arquivo.txt; rm -rf /", o comando rm será executado
+            // Exemplo: se name = "arquivo.txt && cat /etc/passwd", múltiplos comandos serão executados
             command = new String[]{"sh", "-c", "cat " + name};
 
             Runtime rt = Runtime.getRuntime();
