@@ -49,6 +49,21 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody @Valid AuthenticationDTO data){
+        // VULNERABILIDADE: Ausência de Headers de Segurança Específicos
+        // Este endpoint retorna tokens JWT sensíveis sem headers adequados:
+        // 1. Cache-Control inadequado - tokens podem ser cacheados
+        // 2. Sem X-Content-Type-Options - risco de MIME sniffing
+        // 3. Sem X-Frame-Options - vulnerável a clickjacking
+        // 4. Sem HSTS - tokens transmitidos via HTTP inseguro
+        
+        // SOLUÇÃO: Adicionar headers específicos para endpoints sensíveis
+        // HttpHeaders headers = new HttpHeaders();
+        // headers.setCacheControl(CacheControl.noStore());
+        // headers.set("X-Content-Type-Options", "nosniff");
+        // headers.set("X-Frame-Options", "DENY");
+        // headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
+        // return ResponseEntity.ok().headers(headers).body(response);
+        
         // VULNERÁVEL A SQL INJECTION - concatena strings diretamente na query
         // Exemplo de payload malicioso: {"login": "admin' OR '1'='1", "password": "qualquer"}
         User user = vulnerableUserService.findByLoginVulnerable(data.login());

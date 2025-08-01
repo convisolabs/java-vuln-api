@@ -24,6 +24,17 @@ public class SecurityConfigurations {
                 .cors().and()
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                
+                // VULNERABILIDADE: Ausência de Headers de Segurança HTTP
+                // A aplicação não configura cabeçalhos de segurança essenciais, resultando em:
+                // 1. XSS (Cross-Site Scripting) - sem X-XSS-Protection e Content-Security-Policy
+                // 2. Clickjacking - sem X-Frame-Options
+                // 3. MIME sniffing - sem X-Content-Type-Options
+                // 4. Cache de dados sensíveis - sem Cache-Control adequado
+                // 5. HSTS não configurado - sem Strict-Transport-Security
+                // 6. Referrer leakage - sem Referrer-Policy
+                // 7. Feature Policy não configurado - sem Permissions-Policy
+                
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.GET, "/api/allusers").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
