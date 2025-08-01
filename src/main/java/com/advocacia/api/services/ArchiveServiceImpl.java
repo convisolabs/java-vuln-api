@@ -42,18 +42,13 @@ public class ArchiveServiceImpl implements IArchiveService {
         try{
             String destFolder = destSendDocument;
             String name = fileName;
-            
-            // VULNERABILIDADE 1: Path Traversal
-            // A linha abaixo permite path traversal através do parâmetro 'name'
-            // Exemplo: se name = "../../../etc/passwd", o arquivo será salvo fora do diretório permitido
-            // VULNERABILIDADE 2: Upload de Arquivos Arbitrários
+        
+            // VULNERABILIDADE: Upload de Arquivos Arbitrários
             // Não há validação de extensão, permitindo upload de qualquer tipo de arquivo
             Path path = Paths.get(destFolder + File.separator + name);
             
             Archive fileExists = findByPath(path.toString());
             if(fileExists == null){
-                // VULNERABILIDADE 3: Sobrescrita de Arquivos
-                // StandardCopyOption.REPLACE_EXISTING permite sobrescrever arquivos existentes
                 Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
                 Archive arch = new Archive();
                 arch.setLinkArchive(path.toString());
