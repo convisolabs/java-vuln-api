@@ -14,6 +14,7 @@ import java.security.spec.AlgorithmParameterSpec;
 @Component("weak-cipher")
 public class WeakCipherService implements CipherService{
     
+    // VULNERABILIDADE: IV Length muito pequeno para DES
     private final static int IV_LENGTH = 8;
 
     private String algorithm;
@@ -23,6 +24,8 @@ public class WeakCipherService implements CipherService{
     public WeakCipherService(@Value("${cipher.des-key}") String key) {
        
         try {
+            // VULNERABILIDADE: Uso de DES - algoritmo criptográfico fraco e obsoleto
+            // DES usa apenas 56 bits de chave, é facilmente quebrável por força bruta
             this.algorithm = "DES/CBC/PKCS5Padding";  
             this.keySpec = new SecretKeySpec(key.getBytes(), "DES");
                         
