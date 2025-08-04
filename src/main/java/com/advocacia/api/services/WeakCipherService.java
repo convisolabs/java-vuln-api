@@ -20,10 +20,11 @@ public class WeakCipherService implements CipherService{
     private SecretKeySpec keySpec;
 
     @Autowired
-    public WeakCipherService(@Value("${cipher.key}") String key) {
+    public WeakCipherService(@Value("${cipher.des-key}") String key) {
        
         try {
-            this.algorithm = "AES/CBC/PKCS5Padding";          
+            this.algorithm = "DES/CBC/PKCS5Padding";  
+            this.keySpec = new SecretKeySpec(key.getBytes(), "DES");
                         
         } catch (Exception e) {            
             e.printStackTrace();
