@@ -55,6 +55,8 @@ public class TokenService {
 
     public Authentication validateToken(String token){
         try {
+            // VULNERÁBILIDADE: Não verifica o token recebido
+            // As classes e métodos utilizados são obsoletos, não validam corretamente o token recebido
             Jwt jwt = Jwts.parser()
                     .setSigningKey(secret)
                     .parse(token);
