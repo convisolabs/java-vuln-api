@@ -22,7 +22,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
         if (path.equals("/api/login") || path.equals("/api/register") || path.equals("/api/allusers") || 
-            path.startsWith("/oauth/")) {
+            path.startsWith("/oauth/") || path.startsWith("/oauth-secure/")) {
             filterChain.doFilter(request, response);
             return;
         }

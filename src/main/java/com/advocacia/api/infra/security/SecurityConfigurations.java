@@ -44,6 +44,7 @@ public class SecurityConfigurations {
                         .requestMatchers(HttpMethod.POST, "/api/login2").permitAll()
                         .requestMatchers("/api/processos/**").permitAll()
                         .requestMatchers("/oauth/**").permitAll() // VULNERABILIDADE: Endpoints OAuth abertos
+                        .requestMatchers("/oauth-secure/**").permitAll() // SOLUÇÃO: Endpoints OAuth seguros
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

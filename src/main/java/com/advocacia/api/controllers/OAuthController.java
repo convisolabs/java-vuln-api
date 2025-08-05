@@ -83,6 +83,7 @@ public class OAuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Erro na troca de token: " + e.getMessage());
         }
+    }
     
     @GetMapping("/userinfo")
     public ResponseEntity<Object> userInfo(@RequestHeader("Authorization") String authorization) {
