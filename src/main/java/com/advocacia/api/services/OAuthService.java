@@ -33,8 +33,7 @@ public class OAuthService {
     
     /**
      * VULNERABILIDADE: Validação inadequada de client_secret
-     * O client_secret é comparado diretamente sem criptografia
-     * e está hardcoded no código
+     * O client_secret é comparado diretamente sem criptografia e está hardcoded no código
      */
     public boolean validateClient(String clientId, String clientSecret) {
         // VULNERABILIDADE: Client secret hardcoded e exposto
@@ -80,11 +79,6 @@ public class OAuthService {
             throw new RuntimeException("Client ID não corresponde");
         }
         
-        // VULNERABILIDADE: Não valida se redirect_uri corresponde
-        // if (!originalRedirectUri.equals(redirectUri)) {
-        //     throw new RuntimeException("Redirect URI não corresponde");
-        // }
-        
         String accessToken = UUID.randomUUID().toString();
         String refreshToken = UUID.randomUUID().toString();
         
@@ -100,10 +94,6 @@ public class OAuthService {
         );
     }
     
-    /**
-     * VULNERABILIDADE: Validação inadequada de access token
-     * Não verifica expiração ou revogação
-     */
     public boolean validateAccessToken(String accessToken) {
         // VULNERABILIDADE: Não verifica expiração do token
         // VULNERABILIDADE: Não verifica se o token foi revogado
@@ -119,8 +109,6 @@ public class OAuthService {
             throw new RuntimeException("Token de acesso inválido");
         }
         
-        // VULNERABILIDADE: Retorna dados fixos sem verificar o usuário real
-        // Em produção, deveria buscar dados do usuário baseado no token
         return new OAuthUserInfo(
             "user123",
             "Usuário OAuth",
@@ -129,18 +117,14 @@ public class OAuthService {
         );
     }
     
-    /**
-     * VULNERABILIDADE: Geração de JWT sem validação adequada
-     * Usa dados fixos em vez de dados reais do usuário
-     */
+
     public String generateJWTFromOAuth(String accessToken) {
         if (!validateAccessToken(accessToken)) {
             throw new RuntimeException("Token de acesso inválido");
         }
         
-        // VULNERABILIDADE: Cria usuário fake em vez de buscar usuário real
         User fakeUser = new User("OAuth User", "oauth_user", "password", UserRole.USER);
         
         return tokenService.generateToken(fakeUser);
     }
-} 
+}
