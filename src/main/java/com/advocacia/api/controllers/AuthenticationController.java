@@ -47,6 +47,12 @@ public class AuthenticationController {
     @Autowired
     private VulnerableUserService vulnerableUserService;
 
+    // VULNERABILIDADE: Ataque de Força Bruta
+        // Este endpoint não implementa proteções contra força bruta:
+        // 1. Sem rate limiting - permite múltiplas tentativas de login
+        // 2. Sem bloqueio de conta após falhas - permite tentativas ilimitadas
+        // 3. Sem delay exponencial - não há atraso crescente entre tentativas
+
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody @Valid AuthenticationDTO data){
         // VULNERABILIDADE: Ausência de Headers de Segurança Específicos
@@ -54,15 +60,7 @@ public class AuthenticationController {
         // 1. Cache-Control inadequado - tokens podem ser cacheados
         // 2. Sem X-Content-Type-Options - risco de MIME sniffing
         // 3. Sem X-Frame-Options - vulnerável a clickjacking
-        // 4. Sem HSTS - tokens transmitidos via HTTP inseguro
-        
-        // SOLUÇÃO: Adicionar headers específicos para endpoints sensíveis
-        // HttpHeaders headers = new HttpHeaders();
-        // headers.setCacheControl(CacheControl.noStore());
-        // headers.set("X-Content-Type-Options", "nosniff");
-        // headers.set("X-Frame-Options", "DENY");
-        // headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
-        // return ResponseEntity.ok().headers(headers).body(response);
+        // 4. Sem HSTS - tokens transmitidos via HTTP inseguro 
         
         // VULNERÁVEL A SQL INJECTION - concatena strings diretamente na query
         // Exemplo de payload malicioso: {"login": "admin' OR '1'='1", "password": "qualquer"}
